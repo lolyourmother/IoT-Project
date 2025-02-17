@@ -1,0 +1,8 @@
+Step 1:
+Head to https://www.arduino.cc/en/software and download according to your operating system. There are options for Windows, Linux, and macOS. After downloading, run the app and follow the instructions shown on the screen to finish setting up. There’s no need to donate but if you’d like to go ahead. If not keep clicking “JUST DOWNLOAD”
+
+Step 2:
+Open https://github.com/fdebrabander/Arduino-LiquidCrystal-I2C-library and download the zip file.
+
+Step 3:
+Open up  Arduino IDE. Go to Sketch > Include Libraries > Add .ZIP Library…    Search for the downloaded zip file and select. 
