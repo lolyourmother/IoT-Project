@@ -1,0 +1,145 @@
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+
+// Pin assignments
+const int pumpPin = 2;       
+const int buttonPin = 3;     
+const int buzzerPin = 11;    
+const int redPin = 5;        
+const int greenPin = 6;      
+const int bluePin = 7;       
+const int sensorPin = A0;    
+
+
+bool systemOn = false; // System OFF initially
+unsigned long lastMoistureCheck = 0; // Time of last moisture check
+const unsigned long moistureCheckInterval = 5000; // 5-second interval for moisture check
+bool lastButtonState = HIGH; // Last button state for debouncing
+
+
+void setup() {
+ Serial.begin(9600);
+ lcd.begin();
+ lcd.backlight();
+ lcd.clear();
+
+
+ pinMode(pumpPin, OUTPUT);
+ digitalWrite(pumpPin, HIGH);  // Pump OFF initially
+
+
+ pinMode(buttonPin, INPUT_PULLUP); // Button with pull-up resistor
+ pinMode(buzzerPin, OUTPUT);
+ pinMode(redPin, OUTPUT);
+ pinMode(greenPin, OUTPUT);
+ pinMode(bluePin, OUTPUT);
+
+
+ lcd.setCursor(0, 0);
+ lcd.print("IRRIGATION");
+ lcd.setCursor(0, 1);
+ lcd.print("SYSTEM READY");
+ delay(3000);
+ lcd.clear();
+}
+
+
+void loop() {
+ // Button toggle handling
+ bool buttonState = digitalRead(buttonPin);
+ if (buttonState == LOW && lastButtonState == HIGH) {
+   systemOn = !systemOn; // Toggle system state
+   Serial.println(systemOn ? "System ON" : "System OFF");
+   lcd.clear();
+   delay(500); // Simple debounce delay
+ }
+ lastButtonState = buttonState;
+
+
+ if (systemOn) {
+   lcd.setCursor(0, 0);
+   lcd.print("System ON");
+
+
+   // Check moisture level at intervals
+   if (millis() - lastMoistureCheck >= moistureCheckInterval) {
+     lastMoistureCheck = millis(); // Reset the moisture check timer
+    
+     int moistureValue = analogRead(sensorPin);
+     Serial.println(moistureValue);
+
+
+     if (moistureValue < 290) { // Too much water
+       digitalWrite(pumpPin, HIGH);  // Ensure pump is OFF
+       lcd.setCursor(0, 1);
+       lcd.print("Too Much Water");
+       analogWrite(redPin, 255);
+       analogWrite(greenPin, 0);
+       analogWrite(bluePin, 0);
+
+
+       for (int i = 0; i < 2; i++) {
+         tone(buzzerPin, 1000);
+         delay(200);
+         noTone(buzzerPin);
+         delay(200);
+       }
+     }
+     else if (moistureValue >= 290 && moistureValue <= 400) { // Well hydrated
+       digitalWrite(pumpPin, HIGH); // Turn OFF pump
+       lcd.setCursor(0, 1);
+       lcd.print("Well Hydrated");
+       analogWrite(redPin, 0);
+       analogWrite(greenPin, 255);
+       analogWrite(bluePin, 0);
+     }
+     else if (moistureValue > 400 && moistureValue <= 599) { // Medium range
+       digitalWrite(pumpPin, HIGH);
+       lcd.setCursor(0, 1);
+       lcd.print("Hydrated");
+       analogWrite(redPin, 0);
+       analogWrite(greenPin, 0);
+       analogWrite(bluePin, 255);
+     }
+     else { // Low moisture
+       digitalWrite(pumpPin, LOW); // Turn ON pump
+       lcd.setCursor(0, 1);
+       lcd.print("Dehydrated!");
+       lcd.setCursor(0, 2);
+       lcd.print("Watering...");
+      
+       for (int i = 0; i < 5; i++) {  // Blink 5 times
+         analogWrite(redPin, 0);
+         analogWrite(greenPin, 0);
+         analogWrite(bluePin, 255);
+         delay(200);
+         analogWrite(bluePin, 0);
+         delay(200);
+       }
+
+
+       analogWrite(redPin, 255);
+       analogWrite(greenPin, 0);
+       analogWrite(bluePin, 0);
+      
+       for (int i = 0; i < 2; i++) {
+         tone(buzzerPin, 1000);
+         delay(100);
+         noTone(buzzerPin);
+         delay(100);
+       }
+     }
+   }
+ }
+ else {
+   lcd.setCursor(0, 0);
+   lcd.print("System OFF");
+   digitalWrite(pumpPin, HIGH);
+   noTone(buzzerPin);
+   analogWrite(redPin, 0);
+   analogWrite(greenPin, 0);
+   analogWrite(bluePin, 0);
+   delay(1000);
+ }
+}
