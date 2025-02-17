@@ -1,0 +1,113 @@
+1. Tactile Push Button
+
+const int buttonPin = 3;
+bool systemOn = false;
+
+
+void setup() {
+ Serial.begin(9600);
+ pinMode(buttonPin, INPUT_PULLUP); 
+}
+
+
+void loop() {
+ if (digitalRead(buttonPin) == LOW) {
+   systemOn = !systemOn; // Toggle system state
+   Serial.println(systemOn ? "System ON" : "System OFF");
+   delay(500); 
+ }
+}
+
+-----------------------------------------------------------------------
+2. Passive Buzzer
+
+const int buzzerPin = 11;
+
+
+void setup() {
+ pinMode(buzzerPin, OUTPUT);
+}
+
+
+void loop() {
+ for (int i = 0; i < 2; i++) {
+   tone(buzzerPin, 1000);
+   delay(100);               noTone(buzzerPin);        delay(100);             
+}
+ delay(2000);
+}
+
+-----------------------------------------------------------------------
+3. 4 Pin RGB LED 
+
+const int redPin = 7;    
+const int greenPin = 6;  
+const int bluePin = 5;   
+
+
+void setup() {
+ pinMode(redPin, OUTPUT);
+ pinMode(greenPin, OUTPUT);
+ pinMode(bluePin, OUTPUT);
+}
+
+
+void loop() {
+
+
+ analogWrite(redPin, 255);
+ analogWrite(greenPin, 0);
+ analogWrite(bluePin, 0);
+ delay(1000); 
+ analogWrite(redPin, 0);
+ analogWrite(greenPin, 255);
+ analogWrite(bluePin, 0);
+ delay(1000);
+
+
+ analogWrite(redPin, 0);
+ analogWrite(greenPin, 0);
+ analogWrite(bluePin, 255);
+ delay(1000);
+}
+
+-----------------------------------------------------------------------
+4. 2*16 LCD Display with I2C Module
+
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27, 16, 2); 
+
+
+void setup() {
+ lcd.begin();
+ lcd.backlight();
+ lcd.setCursor(0, 0);        
+ lcd.print("Hello, World!");   
+}
+
+
+void loop() {
+}
+
+-----------------------------------------------------------------------
+5. 5v Relay
+
+const int relayPin = 2; 
+
+
+void setup() {
+ pinMode(relayPin, OUTPUT); 
+}
+
+
+void loop() {
+ digitalWrite(relayPin, LOW);
+ delay(2000);                 
+ digitalWrite(relayPin, HIGH); 
+ delay(2000);                 
+}
+
+-----------------------------------------------------------------------
+6. Water Pump Motor
+
+Carefully connect the wires to the negative and positive terminals of the 9V battery, with the red wire connected to positive and the black wire to negative.
