@@ -1,15 +1,4 @@
-# IoT-Project
-
-**AUTOMATED PLANT WATERING SYSTEM**
-
-Project by:
-  * 2222620260 Suvapat Pimklang
-  * 2221610039 Arinpas Jotivej
-  * 2221610237 Paristemi Roe Din
-  * 2221610145 Joseph Miles Nozal
-  * 2221610187 Jirat Kiatsiri
-  * 2221610336 Sora Ito
-
+# AUTOMATED PLANT WATERING SYSTEM
 
 Introduction
 --
